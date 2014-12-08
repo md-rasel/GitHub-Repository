@@ -1,6 +1,10 @@
 package service;
 
 import common.CommonConstants;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
@@ -12,6 +16,8 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.*;
+import java.util.Iterator;
+import java.util.Set;
 
 /**
  * Created by Md. Rasel on 12/6/14.
@@ -101,8 +107,8 @@ public class BookDataConverterService {
 
             for (String eachRow : fileContentArr) {
                 eachRowArr = eachRow.split(CommonConstants.SEPARATOR_COLON);
-                element = eachRowArr[0];
-                nodeValue = eachRowArr[1];
+                element = eachRowArr[0].trim();
+                nodeValue = eachRowArr[1].trim();
 
                 if (nodeValue.split(CommonConstants.SEPARATOR_COMMA).length > 1) {
                     firstname = doc.createElement(element);
@@ -157,7 +163,7 @@ public class BookDataConverterService {
         }
     }
 
-    public static boolean convertingXMLtoTXTFile (String outputFileName, String fileContent) {
+    public static String convertingXMLtoTXTFile (String fileContent) {
 
         String convertedFileContent = "", authorConcat = "";
 
@@ -196,10 +202,94 @@ public class BookDataConverterService {
                 convertedFileContent += "isbn : " + doc.getElementsByTagName("isbn").item(0).getTextContent() + CommonConstants.SEPARATOR_NEW_LINE_RETURN;
             }
 
-            createTXTFile(outputFileName, convertedFileContent);
-
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+
+        return convertedFileContent;
+    }
+
+    public static String readingJSONFile (String fileName) {
+
+        JSONParser parser = new JSONParser();
+        String fileContent = "";
+
+        try {
+//            Object obj = parser.parse(new FileReader("C:\\Documents and Settings\\Java Projects\\CreatingVFiles\\input-json.json"));
+            Object obj = parser.parse(new FileReader(fileName));
+
+            JSONObject jsonObject = (JSONObject) obj;
+
+            String keyValue = "", concatValue = "";
+            JSONArray jsonArray = new JSONArray();
+            if (jsonObject != null && jsonObject.containsKey("book") && jsonObject.size() > 0) {
+                jsonObject = (JSONObject) jsonObject.get("book");
+                Set<String> jsonKeys  = jsonObject.keySet();
+                for (String key : jsonKeys) {
+                    if( jsonObject.get(key) instanceof JSONArray ) {
+                        jsonArray = (JSONArray) jsonObject.get(key);
+                        Iterator<String> iterator = jsonArray.iterator();
+                        concatValue = "";
+                        while (iterator.hasNext()) {
+                            concatValue += iterator.next() + CommonConstants.SEPARATOR_COMMA + " ";
+                        }
+                        fileContent += key + " " + CommonConstants.SEPARATOR_COLON + " " + concatValue.substring(0, concatValue.length() - 2) + CommonConstants.SEPARATOR_NEW_LINE_RETURN;
+                    } else if (jsonObject.get(key) instanceof String ) {
+                        keyValue = (String) jsonObject.get(key);
+                        fileContent += key + CommonConstants.SEPARATOR_COLON + " " + keyValue + CommonConstants.SEPARATOR_NEW_LINE_RETURN;
+                    }
+                }
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return fileContent.substring(0, fileContent.length() - 4);
+    }
+
+    public static boolean creatingJSONFile (String outputFileName, String fileContent) {
+
+        JSONObject objBook = new JSONObject();
+
+        String fileContentArr[] = fileContent.split(CommonConstants.SEPARATOR_NEW_LINE_RETURN);
+        String element = "", nodeValue = "";
+        String eachRowArr[];
+        JSONObject jsonObject = new JSONObject();
+
+        JSONArray list = new JSONArray();
+
+        for (String eachRow : fileContentArr) {
+            eachRowArr = eachRow.split(CommonConstants.SEPARATOR_COLON);
+            element = eachRowArr[0].trim();
+            nodeValue = eachRowArr[1].trim();
+
+            if (nodeValue.split(CommonConstants.SEPARATOR_COMMA).length > 1) {
+                eachRowArr = nodeValue.split(CommonConstants.SEPARATOR_COMMA);
+                for (String eachRow1 : eachRowArr)
+                {
+                    list.add(eachRow1);
+                }
+                jsonObject.put(element, list);
+            } else {
+                jsonObject.put(element, nodeValue.trim());
+            }
+        }
+        objBook.put("book", jsonObject);
+
+        try {
+//            FileWriter file = new FileWriter("C:\\Documents and Settings\\Java Projects\\CreatingVFiles\\output-json.json");
+            FileWriter file = new FileWriter(outputFileName);
+            file.write(objBook.toJSONString());
+            file.flush();
+            file.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
             return false;
         }
 

@@ -64,6 +64,11 @@ public class BookDataConverterModel {
                     mapInstance.put("HasErrors", true);
                 }
 
+                if (!isConversionAllowedForTXT(inputFileName, outputFileExtn)) {
+                    mapInstance.put("FileTXTAllowedError", "Conversion Support For TXT File Has Been Removed");
+                    mapInstance.put("HasErrors", true);
+                }
+
                 if (!Boolean.parseBoolean(mapInstance.get("HasErrors").toString())) {
                     mapInstance.put("InputFileName", inputFileName);
                     mapInstance.put("InputFileExtn", inputFileName.split(CommonConstants.SEPARATOR_DOT)[1]);
@@ -143,8 +148,25 @@ public class BookDataConverterModel {
                     }
                 }
             }
+        } else {
+            isValid = true;
         }
 
+        return isValid;
+    }
+
+    public static boolean isConversionAllowedForTXT(String inputFileName, String fileExtension) {
+        boolean isValid = false;
+        String fileNames[] = inputFileName.split(CommonConstants.SEPARATOR_DOT);
+        if (CommonConstants.IS_ALLOWED_TXT_CONVERSION) {
+            isValid = true;
+        } else {
+            if (fileNames[fileNames.length - 1].equalsIgnoreCase(CommonConstants.FILE_EXTENSION_TXT) || fileExtension.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_TXT)) {
+                isValid = false;
+            } else {
+                isValid = true;
+            }
+        }
         return isValid;
     }
 
@@ -152,9 +174,13 @@ public class BookDataConverterModel {
         boolean isSuccessfullySaved = true;
         outputFileName = CommonConstants.INPUT_FILE_PATH + outputFileName;
         if (inputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_XML) && outputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_TXT)) {
-            isSuccessfullySaved = BookDataConverterService.getInstance().convertingXMLtoTXTFile(outputFileName, fileContent);
-        } else if (inputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_TXT) && outputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_XML)) {
+            fileContent = BookDataConverterService.getInstance().convertingXMLtoTXTFile(fileContent);
+            isSuccessfullySaved = BookDataConverterService.getInstance().createTXTFile(outputFileName, fileContent);
+        } else if ((inputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_TXT) || inputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_JSON)) && outputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_XML)) {
             isSuccessfullySaved = BookDataConverterService.getInstance().creatingXMLFile(outputFileName, fileContent);
+        } else if (inputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_XML) && outputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_JSON)) {
+            fileContent = BookDataConverterService.getInstance().convertingXMLtoTXTFile(fileContent);
+            isSuccessfullySaved = BookDataConverterService.getInstance().creatingJSONFile(outputFileName, fileContent);
         }
         return isSuccessfullySaved;
     }
@@ -165,6 +191,8 @@ public class BookDataConverterModel {
             inputFileExtnMessage = "Book Data Is In TEXT Format";
         } else if (inputFileExtension.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_XML)) {
             inputFileExtnMessage = "Book Data Is In XML Format";
+        } else if (inputFileExtension.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_JSON)) {
+            inputFileExtnMessage = "Book Data Is In JSON Format";
         }
         return inputFileExtnMessage;
     }
@@ -177,6 +205,8 @@ public class BookDataConverterModel {
         } else if (fileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_XML)) {
             fileContent = BookDataConverterService.getInstance().readTextFile(fileName);
             fileContent = BookDataConverterService.getInstance().readXMLFile(fileContent, CommonConstants.XML_FILE_INDENT);
+        } else if (fileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_JSON)) {
+            fileContent = BookDataConverterService.getInstance().readingJSONFile(fileName);
         }
         return fileContent;
     }

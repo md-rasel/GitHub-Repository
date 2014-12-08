@@ -26,10 +26,10 @@ public abstract class CommonConstants {
     public static final String INPUT_FILE_PATH = "files/";
 
     // Declaring Is Extension Conversion Allowed
-    public static final boolean IS_ALLOWED_TXT_CONVERSION = true;
+    public static final boolean IS_ALLOWED_TXT_CONVERSION = false;
     public static final boolean IS_ALLOWED_XML_CONVERSION = true;
-    public static final boolean IS_ALLOWED_JSON_CONVERSION = false;
-    public static final boolean IS_ISBN_VALIDATION_NEEDED = true;
+    public static final boolean IS_ALLOWED_JSON_CONVERSION = true;
+    public static final boolean IS_ISBN_VALIDATION_NEEDED = false;
 
     // Assign numeric value
     public static final int XML_FILE_INDENT = 2;

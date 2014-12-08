@@ -18,7 +18,7 @@ public class BookDataConverterTestCases extends TestCase {
     public void setUp() throws Exception{
         super.setUp();
         inputFileName = "input-xml.xml";
-        outputFileExtn = "txt";
+        outputFileExtn = "json";
     }
 
     public void testBookDataConverter() {
@@ -40,6 +40,9 @@ public class BookDataConverterTestCases extends TestCase {
 
         // Input File Contains ISBN Validation
         assertTrue(BookDataConverterModel.getInstance().isFileContainsISBN(inputFileName));
+
+        // Removing Support TXT File Conversion
+        assertTrue(BookDataConverterModel.getInstance().isConversionAllowedForTXT(inputFileName, outputFileExtn));
 
         String fileNames[] = inputFileName.split(CommonConstants.SEPARATOR_DOT);
         String inputFileExtn = fileNames[fileNames.length - 1];

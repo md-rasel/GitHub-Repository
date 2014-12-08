@@ -42,12 +42,12 @@ public class BookDataConverterMain {
                     outputFileName = mapInstance.get("InputFileExtn").toString() + "-to-" + mapInstance.get("OutputFileExtn").toString() + "." + mapInstance.get("OutputFileExtn").toString();
                     BookDataConverterModel.getInstance().creatingOutputFile(mapInstance.get("InputFileExtn").toString(), mapInstance.get("OutputFileExtn").toString(), outputFileName, fileContent);
 
-                    System.out.println("Here is the output...");
-                    System.out.println("++++");
-                    fileContent = BookDataConverterModel.getInstance().gettingFileContent(mapInstance.get("OutputFileExtn").toString(), outputFileName);
-                    modTagName = "name";
-                    fileContent = BookDataConverterModel.getInstance().modifyFilesContentForDisplay(modTagName, fileContent);
-                    System.out.println(fileContent);
+//                    System.out.println("Here is the output...");
+//                    System.out.println("++++");
+//                    fileContent = BookDataConverterModel.getInstance().gettingFileContent(mapInstance.get("OutputFileExtn").toString(), outputFileName);
+//                    modTagName = "name";
+//                    fileContent = BookDataConverterModel.getInstance().modifyFilesContentForDisplay(modTagName, fileContent);
+//                    System.out.println(fileContent);
 
                 } else {
                     int errNo = 0;
@@ -67,6 +67,10 @@ public class BookDataConverterMain {
                     if (mapInstance.containsKey("FileISBNError")) {
                         System.out.println(++errNo + ". " + mapInstance.get("FileISBNError"));
                     }
+                    if (mapInstance.containsKey("FileTXTAllowedError")) {
+                        System.out.println(++errNo + ". " + mapInstance.get("FileTXTAllowedError"));
+                    }
+
                 }
             } else {
                 System.out.println("Input file name and output file extension is not correct.");

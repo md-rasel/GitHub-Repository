@@ -1,0 +1,8 @@
+{
+"book": {
+	"isbn": "u9348984995898493",
+	"name": "Effective Java",
+	"authors": ["Joshua Bloch", "James Gosling"],
+	"published-date": "October 2005"
+	}
+}
