@@ -17,8 +17,8 @@ public class BookDataConverterTestCases extends TestCase {
 
     public void setUp() throws Exception{
         super.setUp();
-        inputFileName = "input-txt.txt";
-        outputFileExtn = "xml";
+        inputFileName = "input-xml.xml";
+        outputFileExtn = "txt";
     }
 
     public void testBookDataConverter() {
@@ -37,6 +37,9 @@ public class BookDataConverterTestCases extends TestCase {
 
         // Input And Output File Extensions Same Validation
         assertFalse(BookDataConverterModel.getInstance().isSameFileExtensions(inputFileName, outputFileExtn));
+
+        // Input File Contains ISBN Validation
+        assertTrue(BookDataConverterModel.getInstance().isFileContainsISBN(inputFileName));
 
         String fileNames[] = inputFileName.split(CommonConstants.SEPARATOR_DOT);
         String inputFileExtn = fileNames[fileNames.length - 1];

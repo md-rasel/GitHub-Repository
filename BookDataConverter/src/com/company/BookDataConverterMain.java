@@ -15,7 +15,7 @@ public class BookDataConverterMain {
 
     public static void main(String[] args) {
 
-        String fileContent = "", inputFileTypeMsg = "", outputFileName = "";
+        String fileContent = "", inputFileTypeMsg = "", outputFileName = "", modTagName = "";
         System.out.println("Enter input file name and output file extension [separating space e.g. input-txt.txt xml] : ");
 
         try {
@@ -45,6 +45,8 @@ public class BookDataConverterMain {
                     System.out.println("Here is the output...");
                     System.out.println("++++");
                     fileContent = BookDataConverterModel.getInstance().gettingFileContent(mapInstance.get("OutputFileExtn").toString(), outputFileName);
+                    modTagName = "name";
+                    fileContent = BookDataConverterModel.getInstance().modifyFilesContentForDisplay(modTagName, fileContent);
                     System.out.println(fileContent);
 
                 } else {
@@ -61,6 +63,9 @@ public class BookDataConverterMain {
                     }
                     if (mapInstance.containsKey("FileExtnSameError")) {
                         System.out.println(++errNo + ". " + mapInstance.get("FileExtnSameError"));
+                    }
+                    if (mapInstance.containsKey("FileISBNError")) {
+                        System.out.println(++errNo + ". " + mapInstance.get("FileISBNError"));
                     }
                 }
             } else {

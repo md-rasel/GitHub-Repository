@@ -192,6 +192,9 @@ public class BookDataConverterService {
 
             convertedFileContent += "authors : " + authorConcat.substring(0, authorConcat.length() - 1) + CommonConstants.SEPARATOR_NEW_LINE_RETURN;
             convertedFileContent += "published-date : " + doc.getElementsByTagName("published-date").item(0).getTextContent() + CommonConstants.SEPARATOR_NEW_LINE_RETURN;
+            if (doc.getElementsByTagName("isbn").item(0) != null) {
+                convertedFileContent += "isbn : " + doc.getElementsByTagName("isbn").item(0).getTextContent() + CommonConstants.SEPARATOR_NEW_LINE_RETURN;
+            }
 
             createTXTFile(outputFileName, convertedFileContent);
 

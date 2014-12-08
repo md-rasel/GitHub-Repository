@@ -59,6 +59,11 @@ public class BookDataConverterModel {
                     mapInstance.put("HasErrors", true);
                 }
 
+                if (!isFileContainsISBN(inputFileName)) {
+                    mapInstance.put("FileISBNError", "Input File Is Not Containing ISBN");
+                    mapInstance.put("HasErrors", true);
+                }
+
                 if (!Boolean.parseBoolean(mapInstance.get("HasErrors").toString())) {
                     mapInstance.put("InputFileName", inputFileName);
                     mapInstance.put("InputFileExtn", inputFileName.split(CommonConstants.SEPARATOR_DOT)[1]);
@@ -115,6 +120,34 @@ public class BookDataConverterModel {
         return isValid;
     }
 
+    public static boolean isFileContainsISBN(String inputFileName) {
+        boolean isValid = false;
+        String fileNames[] = inputFileName.split(CommonConstants.SEPARATOR_DOT);
+        String inputFileType =  fileNames[fileNames.length - 1];
+        String fileContent = gettingFileContent(inputFileType, inputFileName);
+        String fileContentArr[] = fileContent.split(CommonConstants.SEPARATOR_NEW_LINE_RETURN);
+        String eachRowArr[];
+
+        if (CommonConstants.IS_ISBN_VALIDATION_NEEDED) {
+            if (inputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_TXT)) {
+                for (String eachRow : fileContentArr) {
+                    eachRowArr = eachRow.split(CommonConstants.SEPARATOR_COLON);
+                    if (eachRowArr.length > 0 && eachRowArr[0].trim().equalsIgnoreCase(CommonConstants.ISBN_TAG_NAME)) {
+                        isValid = true;
+                    }
+                }
+            } else if (inputFileType.equalsIgnoreCase(CommonConstants.FILE_EXTENSION_XML)) {
+                for (String eachRow : fileContentArr) {
+                    if (eachRow.trim().contains("<" + CommonConstants.ISBN_TAG_NAME + ">")) {
+                        isValid = true;
+                    }
+                }
+            }
+        }
+
+        return isValid;
+    }
+
     public static boolean creatingOutputFile(String inputFileType, String outputFileType, String outputFileName, String fileContent) {
         boolean isSuccessfullySaved = true;
         outputFileName = CommonConstants.INPUT_FILE_PATH + outputFileName;
@@ -148,4 +181,22 @@ public class BookDataConverterModel {
         return fileContent;
     }
 
+    public static String modifyFilesContentForDisplay (String capitalTagName, String fileContent) {
+        String fileContentArr[] = fileContent.split(CommonConstants.SEPARATOR_NEW_LINE_RETURN);
+        String modFileContent = "", element = "", nodeValue = "";
+        String eachRowArr[];
+        for (String eachRow : fileContentArr) {
+            eachRowArr = eachRow.split(CommonConstants.SEPARATOR_COLON);
+            if (eachRowArr.length > 1) {
+                element = eachRowArr[0];
+                nodeValue = eachRowArr[1];
+                if (element.trim().equalsIgnoreCase(capitalTagName)) {
+                    nodeValue = nodeValue.toUpperCase();
+                    eachRow = element + CommonConstants.SEPARATOR_COLON + nodeValue;
+                }
+            }
+            modFileContent += eachRow + CommonConstants.SEPARATOR_NEW_LINE_RETURN;
+        }
+        return modFileContent;
+    }
 }

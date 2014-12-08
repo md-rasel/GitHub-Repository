@@ -17,6 +17,8 @@ public abstract class CommonConstants {
     public static final String FILE_EXTENSION_XML = "xml";
     public static final String FILE_EXTENSION_JSON = "json";
 
+    public static final String ISBN_TAG_NAME = "isbn";
+
     // Declaring File Extension List
     public static final String[] FILE_EXTENSIONS = {"txt", "xml", "json"};
 
@@ -27,6 +29,7 @@ public abstract class CommonConstants {
     public static final boolean IS_ALLOWED_TXT_CONVERSION = true;
     public static final boolean IS_ALLOWED_XML_CONVERSION = true;
     public static final boolean IS_ALLOWED_JSON_CONVERSION = false;
+    public static final boolean IS_ISBN_VALIDATION_NEEDED = true;
 
     // Assign numeric value
     public static final int XML_FILE_INDENT = 2;
